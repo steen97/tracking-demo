@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NetPath: learn networking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8edf1;--ink:#14202b;--mute:#5a6b7a;--card:#fff;--line:#c9d3dc;--acc:#0e7c86;--accink:#fff;--ok:#2e7d4f;--bad:#b3363a;
+--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a22;--ink:#e6eef4;--mute:#93a5b4;--card:#1a2733;--line:#2c3d4c;--acc:#3cc3cf;--accink:#06262a;--ok:#5fcf8c;--bad:#ff7b7f}}
+:root[data-theme="dark"]{--bg:#101a22;--ink:#e6eef4;--mute:#93a5b4;--card:#1a2733;--line:#2c3d4c;--acc:#3cc3cf;--accink:#06262a;--ok:#5fcf8c;--bad:#ff7b7f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.45}
+main{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:28px;margin:0;letter-spacing:-.5px}
+.sub{color:var(--mute);margin:2px 0 18px;font-size:15px}
+.tabs,.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+button{font:inherit;color:inherit;cursor:pointer;border:1.5px solid var(--line);background:transparent;border-radius:10px;padding:10px 14px;min-height:44px}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.tabs button{flex:1;font-weight:600}
+.chips button{padding:6px 12px;min-height:36px;font-size:14px;border-radius:999px}
+button.on{background:var(--acc);border-color:var(--acc);color:var(--accink)}
+.stat{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin-bottom:8px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.card{background:var(--card);border:1.5px solid var(--line);border-left:6px solid var(--acc);border-radius:14px;min-height:220px;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;width:100%;text-align:left}
+.card small{color:var(--mute);font-size:13px;margin-bottom:10px}
+.card .t{font-size:22px;font-weight:600}
+.card .t.a{font-family:var(--mono);font-weight:500;color:var(--acc)}
+.hint{color:var(--mute);font-size:13px;text-align:center;margin:8px 0 14px}
+.row{display:flex;gap:10px}
+.row button{flex:1;font-weight:600}
+.good{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt{display:block;width:100%;text-align:left;margin-bottom:10px;background:var(--card);font-size:17px}
+.opt.right{border-color:var(--ok);background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad);color:#fff}
+.q{font-size:21px;font-weight:600;margin:6px 0 16px}
+.end{text-align:center;padding:30px 0}
+.end b{font-size:52px;display:block}
+.hide{display:none}
+input{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+label{display:block;font-size:14px;color:var(--mute);margin:0 0 4px}
+.f{display:flex;gap:10px;margin-bottom:14px}.f>div:first-child{flex:2}.f>div:last-child{flex:1}
+.res{background:var(--card);border:1.5px solid var(--line);border-left:6px solid var(--acc);border-radius:14px;padding:6px 16px}
+.res div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.res div:last-child{border:0}.res span{color:var(--mute)}.res b{font-family:var(--mono);font-weight:500;text-align:right;word-break:break-all}
+.note{color:var(--mute);font-size:14px;margin-top:14px}
+.tabs button{padding:10px 4px;font-size:15px}
+.term{background:#0d1a22;color:#a8e4ea;font-family:var(--mono);font-size:14px;border-radius:12px;padding:12px;min-height:120px;max-height:220px;overflow:auto;margin-bottom:14px;word-break:break-word}
+.term div{margin-bottom:4px}
+textarea{font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;margin-top:4px}
+textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.fd{background:var(--card);border:1.5px solid var(--line);border-left:6px solid var(--acc);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.fd.High{border-left-color:var(--bad)}.fd.Medium{border-left-color:#c98a00}
+.fd b{display:block}.fd p{margin:4px 0 0;font-size:14px;color:var(--mute)}
+</style>
+</head>
+<body>
+<main>
+<h1>NetPath</h1>
+<p class="sub">Learn networking in short bursts. Tap a card, then quiz yourself.</p>
+<div class="tabs"><button id="tCards" class="on">Cards</button><button id="tQuiz">Quiz</button><button id="tSub">Subnet</button><button id="tCli">CLI</button><button id="tLog">Logs</button></div>
+<div class="chips" id="chips"></div>
+
+<section id="cards">
+  <div class="stat"><span id="cnt"></span><span id="known"></span></div>
+  <div class="bar"><i id="fill"></i></div>
+  <button class="card" id="card" aria-live="polite"><small id="cl"></small><span class="t" id="ct"></span></button>
+  <p class="hint">Tap the card to flip it</p>
+  <div class="row"><button id="miss">Still learning</button><button id="got" class="good">I know it</button></div>
+</section>
+
+<section id="quiz" class="hide">
+  <div class="stat"><span id="qn"></span><span id="sc"></span></div>
+  <div class="bar"><i id="qfill"></i></div>
+  <div id="qbody"></div>
+</section>
+
+<section id="sub" class="hide">
+  <div class="f"><div><label for="ip">IP address</label><input id="ip" value="192.168.1.130" inputmode="decimal" autocomplete="off"></div><div><label for="pf">Prefix (/)</label><input id="pf" type="number" min="0" max="32" value="26" inputmode="numeric"></div></div>
+  <div class="res" id="res"></div>
+  <p class="note">Try /24, /26, /30. Each extra prefix bit halves the hosts. Network admins do this daily, so repeat it until it is automatic.</p>
+</section>
+
+<section id="cli" class="hide">
+  <div class="stat"><span id="cstep"></span><span>Cisco IOS lab</span></div>
+  <div class="bar"><i id="cfill"></i></div>
+  <p class="q" id="ctask"></p>
+  <div class="term" id="term" aria-live="polite"></div>
+  <div id="cbar">
+    <div class="f"><div><label for="cin" id="cprompt"></label><input id="cin" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off"></div><div><label>&nbsp;</label><button id="crun" class="on" style="width:100%">Run</button></div></div>
+    <div class="row"><button id="chint">Hint</button><button id="cskip">Skip</button></div>
+  </div>
+  <button id="crestart" class="on hide" style="width:100%">Restart lab</button>
+  <p class="note" id="cnote"></p>
+</section>
+
+<section id="log" class="hide">
+  <label for="login">Paste server or firewall logs</label>
+  <textarea id="login" rows="8" spellcheck="false" placeholder="Paste log lines here"></textarea>
+  <div class="row" style="margin:12px 0 16px"><button id="lsample">Load sample</button><button id="lgo" class="on">Analyze</button></div>
+  <div id="lout"></div>
+  <p class="note">This analyzer is rule-based pattern matching, the same idea SIEM tools use at scale. Nothing leaves your device. Next step for you: send the findings to an AI API for plain-English explanations.</p>
+</section>
+</main>
+
+<script>
+var DATA=[
+["Basics","What does LAN stand for?","Local Area Network"],
+["Basics","What does WAN stand for?","Wide Area Network"],
+["Basics","How many layers does the OSI model have?","7"],
+["Basics","Which OSI layer do routers work at?","Layer 3 (Network)"],
+["Basics","Which OSI layer do switches work at?","Layer 2 (Data Link)"],
+["IP","How many bits is an IPv4 address?","32 bits"],
+["IP","How many bits is an IPv6 address?","128 bits"],
+["IP","What does /24 mean?","The first 24 bits are the network part"],
+["IP","What is the subnet mask for /24?","255.255.255.0"],
+["IP","How many usable hosts are in a /24?","254"],
+["IP","Is 192.168.1.5 public or private?","Private"],
+["IP","What is 127.0.0.1?","Loopback (this device)"],
+["Ports","Which port does HTTP use?","80"],
+["Ports","Which port does HTTPS use?","443"],
+["Ports","Which port does SSH use?","22"],
+["Ports","Which port does DNS use?","53"],
+["Ports","Which port does RDP use?","3389"],
+["Ports","Which port does SMTP (sending email) use?","25"],
+["Protocols","What does DHCP do?","Hands out IP addresses automatically"],
+["Protocols","What does DNS do?","Turns names into IP addresses"],
+["Protocols","What does ARP do?","Maps IP addresses to MAC addresses"],
+["Protocols","Which is reliable, TCP or UDP?","TCP"],
+["Protocols","What does NAT do?","Lets many private devices share one public IP"],
+["Protocols","Which protocol does ping use?","ICMP"],
+["Protocols","What does a firewall do?","Allows or blocks traffic using rules"],
+["Protocols","What is a VLAN?","A virtual network split out of one switch"],
+["Security","What does the CIA triad stand for?","Confidentiality, Integrity, Availability"],
+["Security","What does a VPN do?","Sends your traffic through an encrypted tunnel"],
+["Security","What is phishing?","Tricking people into giving up info or access"],
+["Security","What does MFA add?","A second proof of identity"],
+["Security","What is a DDoS attack?","Flooding a target with traffic to knock it offline"],
+["Security","What does hashing do?","Makes a one-way fingerprint of data"],
+["Security","What is least privilege?","Giving users only the access they need"],
+["Security","What does an IDS do?","Detects suspicious traffic and alerts you"],
+["Security","What is a zero-day?","A flaw that has no patch yet"],
+["Security","Which tool scans a network for open ports?","Nmap"],
+["Security","Why is Telnet unsafe?","It sends everything in plain text"],
+["AI","What is machine learning?","Software that learns patterns from data"],
+["AI","What is an LLM?","A model trained on huge amounts of text to predict language"],
+["AI","What is a prompt?","The instructions you give an AI model"],
+["AI","What is an API?","A way for programs to talk to each other"],
+["AI","What is prompt injection?","Hidden text that tricks an AI into ignoring its rules"],
+["AI","What is overfitting?","Memorizing training data instead of learning patterns"],
+["AI","What is inference?","Using a trained model to make predictions"],
+["AI","What is a neural network?","Layers of connected math nodes that learn from examples"],
+["AI","What is training data?","The examples a model learns from"]
+].map(function(r){return{t:r[0],q:r[1],a:r[2]}});
+var TOPICS=["All","Basics","IP","Ports","Protocols","Security","AI"];
+var topic="All",idx=0,flipped=false,known={},deck=[];
+try{known=JSON.parse(localStorage.getItem("netpath-known")||"{}")}catch(e){known={}}
+function save(){try{localStorage.setItem("netpath-known",JSON.stringify(known))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function pool(){return topic==="All"?DATA:DATA.filter(function(c){return c.t===topic})}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+function chips(){
+  var el=$("chips");el.innerHTML="";
+  TOPICS.forEach(function(t){var b=document.createElement("button");b.textContent=t;if(t===topic)b.className="on";
+    b.onclick=function(){topic=t;idx=0;flipped=false;deck=shuffle(pool());chips();showCard();if(!$("quiz").classList.contains("hide"))startQuiz()};el.appendChild(b)});
+}
+function showCard(){
+  if(!deck.length)deck=shuffle(pool());
+  var c=deck[idx%deck.length];
+  $("cl").textContent=flipped?"Answer":c.t+": question";
+  $("ct").textContent=flipped?c.a:c.q;
+  $("ct").className="t"+(flipped?" a":"");
+  $("cnt").textContent="Card "+(idx%deck.length+1)+" of "+deck.length;
+  var k=pool().filter(function(x){return known[x.q]}).length;
+  $("known").textContent=k+" of "+pool().length+" known";
+  $("fill").style.width=(k/pool().length*100)+"%";
+}
+function next(){idx++;flipped=false;showCard()}
+$("card").onclick=function(){flipped=!flipped;showCard()};
+$("got").onclick=function(){known[deck[idx%deck.length].q]=1;save();next()};
+$("miss").onclick=function(){delete known[deck[idx%deck.length].q];save();next()};
+
+var qs=[],qi=0,score=0;
+function startQuiz(){qs=shuffle(pool()).slice(0,10);qi=0;score=0;showQ()}
+function showQ(){
+  var body=$("qbody");body.innerHTML="";
+  if(qi>=qs.length){
+    $("qn").textContent="Done";$("qfill").style.width="100%";
+    var d=document.createElement("div");d.className="end";
+    d.innerHTML="<b></b><p></p>";
+    d.querySelector("b").textContent=score+" / "+qs.length;
+    d.querySelector("p").textContent=score===qs.length?"Perfect round. Try All topics for a harder mix.":score>=qs.length*0.7?"Solid. Review the ones you missed in Cards.":"Good start. Flip through Cards, then try again.";
+    var b=document.createElement("button");b.className="on";b.style.width="100%";b.textContent="Play again";b.onclick=startQuiz;
+    d.appendChild(b);body.appendChild(d);return;
+  }
+  var c=qs[qi];
+  $("qn").textContent="Question "+(qi+1)+" of "+qs.length;
+  $("sc").textContent="Score "+score;
+  $("qfill").style.width=(qi/qs.length*100)+"%";
+  var p=document.createElement("p");p.className="q";p.textContent=c.q;body.appendChild(p);
+  var wrong=shuffle(DATA.filter(function(x){return x.t===c.t&&x.a!==c.a}).map(function(x){return x.a}));
+  var opts=shuffle([c.a].concat(wrong.slice(0,3)));
+  var done=false;
+  opts.forEach(function(o){
+    var b=document.createElement("button");b.className="opt";b.textContent=o;
+    b.onclick=function(){
+      if(done)return;done=true;
+      var all=body.querySelectorAll(".opt");
+      all.forEach(function(x){if(x.textContent===c.a)x.classList.add("right")});
+      if(o===c.a){score++;known[c.q]=1;save()}else{b.classList.add("wrong");delete known[c.q];save()}
+      $("sc").textContent="Score "+score;
+      var n=document.createElement("button");n.className="on";n.style.width="100%";n.textContent=qi+1>=qs.length?"See results":"Next question";
+      n.onclick=function(){qi++;showQ()};body.appendChild(n);n.focus();
+    };
+    body.appendChild(b);
+  });
+}
+function ip2n(s){var p=s.trim().split(".");if(p.length!==4)return null;var n=0;for(var i=0;i<4;i++){if(!/^\d{1,3}$/.test(p[i])||+p[i]>255)return null;n=n*256+(+p[i])}return n}
+function n2ip(n){return[n>>>24,(n>>>16)&255,(n>>>8)&255,n&255].join(".")}
+function calc(){
+  var r=$("res");r.innerHTML="";
+  var ip=ip2n($("ip").value),pf=parseInt($("pf").value,10);
+  if(ip===null||isNaN(pf)||pf<0||pf>32){r.textContent="Enter an IPv4 address like 10.0.0.5 and a prefix from 0 to 32.";r.style.padding="16px";return}
+  r.style.padding="6px 16px";
+  var mask=pf===0?0:((0xFFFFFFFF<<(32-pf))>>>0),net=(ip&mask)>>>0,bc=(net|(~mask>>>0))>>>0;
+  var hosts=pf===32?1:pf===31?2:Math.pow(2,32-pf)-2,first=pf>=31?net:net+1,last=pf>=31?bc:bc-1;
+  var priv=(ip>>>24===10)||(ip>>>20===0xAC1)||(ip>>>16===0xC0A8);
+  [["Subnet mask",n2ip(mask)],["Network",n2ip(net)+"/"+pf],["First host",n2ip(first)],["Last host",n2ip(last)],["Broadcast",n2ip(bc)],["Usable hosts",String(hosts)],["Type",priv?"Private":"Public (or special)"]].forEach(function(x){
+    var d=document.createElement("div"),s=document.createElement("span"),b=document.createElement("b");
+    s.textContent=x[0];b.textContent=x[1];d.appendChild(s);d.appendChild(b);r.appendChild(d)});
+}
+$("ip").oninput=calc;$("pf").oninput=calc;
+function tab(n){
+  $("cards").classList.toggle("hide",n!=="cards");$("quiz").classList.toggle("hide",n!=="quiz");$("sub").classList.toggle("hide",n!=="sub");$("cli").classList.toggle("hide",n!=="cli");$("log").classList.toggle("hide",n!=="log");
+  $("chips").classList.toggle("hide",n!=="cards"&&n!=="quiz");
+  $("tCards").className=n==="cards"?"on":"";$("tQuiz").className=n==="quiz"?"on":"";$("tSub").className=n==="sub"?"on":"";$("tCli").className=n==="cli"?"on":"";$("tLog").className=n==="log"?"on":"";
+  if(n==="quiz")startQuiz();else if(n==="cards")showCard();else if(n==="sub")calc();else if(n==="cli")cliStart();
+}
+$("tCards").onclick=function(){tab("cards")};
+$("tQuiz").onclick=function(){tab("quiz")};
+$("tSub").onclick=function(){tab("sub")};
+$("tCli").onclick=function(){tab("cli")};
+$("tLog").onclick=function(){tab("log")};
+
+var STEPS=[
+['Router>','You are in user mode. Enter privileged mode.',['enable'],'enable moves you from > to #, where you can view and save the config.'],
+['Router#','Enter global configuration mode.',['configure terminal'],'Global config is where you change settings for the whole device.'],
+['Router(config)#','Name this router R1.',['hostname !r1'],'A clear hostname tells you which device you are logged into.'],
+['R1(config)#','Enter interface GigabitEthernet0/0.',['interface !gigabitethernet0/0','interface !g0/0','interface !gi0/0'],'Interface mode lets you configure one port. Short forms like int g0/0 work too.'],
+['R1(config-if)#','Give it 192.168.1.1 with mask 255.255.255.0.',['ip address !192.168.1.1 !255.255.255.0'],'This is the default gateway address for devices on 192.168.1.0/24.'],
+['R1(config-if)#','Turn the interface on.',['no shutdown'],'Router interfaces are off by default. no shutdown brings them up.'],
+['R1(config-if)#','Go back one level to global config.',['exit'],'exit moves up one level. end jumps all the way to privileged mode.'],
+['R1(config)#','Set the privileged-mode password to cisco123 (hashed).',['enable secret !cisco123'],'enable secret is stored hashed. The older enable password is not.'],
+['R1(config)#','Jump straight back to privileged mode.',['end'],'end works from any config level.'],
+['R1#','Save your config so it survives a reboot.',['copy running-config startup-config','write memory','write'],'Running-config lives in RAM. Unsaved changes vanish at reboot.'],
+['R1#','Show a one-line summary of every interface.',['show ip interface brief'],'The first command to run when troubleshooting. Look for up/up.'],
+['R1#','Show the routing table.',['show ip route'],'C means connected, S means static. This is how the router decides where packets go.']
+];
+var cs=0,hist=[];
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ')}
+function match(inp,ans){var a=norm(inp).split(' '),e=ans.split(' ');if(a.length!==e.length)return false;
+  for(var i=0;i<e.length;i++){var w=e[i];if(w.charAt(0)==='!'){if(a[i]!==w.slice(1))return false}else if(!a[i]||w.indexOf(a[i])!==0)return false}return true}
+function cliStart(){cs=0;hist=[];$('cnote').textContent='';cliRender()}
+function cliRender(){
+  var t=$('term'),done=cs>=STEPS.length;t.innerHTML='';
+  hist.forEach(function(h){var d=document.createElement('div');d.textContent=h;t.appendChild(d)});
+  $('cstep').textContent=done?'Complete':'Step '+(cs+1)+' of '+STEPS.length;
+  $('cfill').style.width=(cs/STEPS.length*100)+'%';
+  $('cbar').classList.toggle('hide',done);$('crestart').classList.toggle('hide',!done);
+  $('ctask').textContent=done?'Lab complete. You configured, secured, saved, and verified a router.':STEPS[cs][1];
+  if(!done){$('cprompt').textContent='Prompt: '+STEPS[cs][0];$('cin').value=''}
+  t.scrollTop=t.scrollHeight;
+}
+function cliRun(){
+  if(cs>=STEPS.length)return;
+  var v=$('cin').value,s=STEPS[cs];if(!v.trim())return;
+  hist.push(s[0]+' '+v.trim());
+  var ok=s[2].some(function(a){return match(v,a)});
+  if(ok){$('cnote').textContent='Correct. '+s[3];cs++}else{hist.push('% Invalid input. Check the task and try again.');$('cnote').textContent=''}
+  cliRender();$('cin').focus();
+}
+$('crun').onclick=cliRun;
+$('cin').onkeydown=function(e){if(e.key==='Enter')cliRun()};
+$('chint').onclick=function(){if(cs<STEPS.length)$('cnote').textContent='Hint: '+STEPS[cs][2][0].replace(/!/g,'')};
+$('cskip').onclick=function(){if(cs>=STEPS.length)return;var s=STEPS[cs];hist.push(s[0]+' '+s[2][0].replace(/!/g,'')+'  (skipped)');$('cnote').textContent=s[3];cs++;cliRender()};
+$('crestart').onclick=cliStart;
+
+function sampleLog(){
+  var L=[],ip='203.0.113.45',i;
+  for(i=0;i<8;i++)L.push('Oct 17 03:1'+i+':0'+i+' srv sshd[2210]: Failed password for '+(i%2?'root':'admin')+' from '+ip+' port 4'+i+'22 ssh2');
+  L.push('Oct 17 03:20:11 srv sshd[2301]: Accepted password for admin from '+ip+' port 51022 ssh2');
+  L.push('Oct 17 03:21:40 srv useradd[2330]: new user: name=backup2, UID=1002');
+  for(i=20;i<34;i++)L.push('Oct 17 04:02:'+(i+10)+' fw kernel: DROP IN=eth0 SRC=198.51.100.7 DST=10.0.0.5 PROTO=TCP DPT='+i);
+  L.push('Oct 17 08:15:02 srv sshd[2410]: Accepted publickey for maya from 192.168.1.20 port 50111 ssh2');
+  $('login').value=L.join('\n');
+}
+function analyze(){
+  var lines=$('login').value.split('\n').filter(function(x){return x.trim()});
+  var fails={},ok={},ports={},sus=[],ips={},root={},F=[],m;
+  lines.forEach(function(l){
+    if(m=l.match(/Failed password for (?:invalid user )?(\S+) from (\d+\.\d+\.\d+\.\d+)/)){fails[m[2]]=(fails[m[2]]||0)+1;if(m[1]==='root')root[m[2]]=1}
+    if(m=l.match(/Accepted \w+ for (\S+) from (\d+\.\d+\.\d+\.\d+)/)){(ok[m[2]]=ok[m[2]]||[]).push(m[1])}
+    if(m=l.match(/SRC=(\d+\.\d+\.\d+\.\d+).*DPT=(\d+)/)){(ports[m[1]]=ports[m[1]]||{})[m[2]]=1}
+    if(/useradd|new user|adduser/i.test(l))sus.push(l);
+    var a=l.match(/\d+\.\d+\.\d+\.\d+/g);if(a)a.forEach(function(x){ips[x]=1});
+  });
+  Object.keys(fails).forEach(function(ip){if(fails[ip]>=5)F.push(['High','Brute-force attempt from '+ip,fails[ip]+' failed logins'+(root[ip]?', including the root account':'')+'.','Block the IP at the firewall, turn off password logins, and use SSH keys.'])});
+  Object.keys(ok).forEach(function(ip){if(fails[ip]>=3)F.push(['High','Possible break-in from '+ip,'Logged in as '+ok[ip][0]+' after '+fails[ip]+' failures.','Treat the account as compromised: reset credentials and check what it did next.'])});
+  Object.keys(ports).forEach(function(ip){var n=Object.keys(ports[ip]).length;if(n>=10)F.push(['Medium','Port scan from '+ip,n+' different ports probed and dropped.','The firewall worked. Keep only needed ports open and consider blocking the source.'])});
+  sus.forEach(function(l){F.push(['Medium','New user account created',l,'Confirm you made it. Attackers add accounts to keep access.'])});
+  if(!F.length)F.push(['Info','Nothing suspicious found','No brute force, scans, or new accounts matched the rules.','Rules only catch known patterns, so keep reviewing logs.']);
+  F.push(['Info','Summary',lines.length+' lines read, '+Object.keys(ips).length+' unique IPs seen.','']);
+  var out=$('lout');out.innerHTML='';
+  F.forEach(function(f){var d=document.createElement('div');d.className='fd '+f[0];
+    var b=document.createElement('b');b.textContent=f[0]+': '+f[1];d.appendChild(b);
+    [f[2],f[3]].forEach(function(t){if(t){var p=document.createElement('p');p.textContent=t;d.appendChild(p)}});out.appendChild(d)});
+}
+$('lsample').onclick=sampleLog;$('lgo').onclick=analyze;
+deck=shuffle(pool());chips();showCard();
+</script>
+</body>
+</html>
